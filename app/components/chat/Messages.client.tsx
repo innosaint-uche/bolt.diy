@@ -1,5 +1,5 @@
 import type { Message } from 'ai';
-import { Fragment, useCallback } from 'react';
+import { Fragment, useCallback, memo } from 'react';
 import { classNames } from '~/utils/classNames';
 import { AssistantMessage } from './AssistantMessage';
 import { UserMessage } from './UserMessage';
@@ -24,8 +24,8 @@ interface MessagesProps {
   addToolResult: ({ toolCallId, result }: { toolCallId: string; result: any }) => void;
 }
 
-export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
-  (props: MessagesProps, ref: ForwardedRef<HTMLDivElement> | undefined) => {
+export const Messages = memo(
+  forwardRef<HTMLDivElement, MessagesProps>((props: MessagesProps, ref: ForwardedRef<HTMLDivElement> | undefined) => {
     const { id, isStreaming = false, messages = [] } = props;
     const location = useLocation();
 
@@ -101,5 +101,5 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
         )}
       </div>
     );
-  },
+  }),
 );
