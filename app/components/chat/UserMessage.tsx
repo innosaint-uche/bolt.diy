@@ -2,7 +2,7 @@
  * @ts-nocheck
  * Preventing TS checks with files presented in the video for a better presentation.
  */
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { MODEL_REGEX, PROVIDER_REGEX } from '~/utils/constants';
 import { Markdown } from './Markdown';
 import { useStore } from '@nanostores/react';
@@ -27,15 +27,25 @@ export const UserMessage = memo(({ content, parts }: UserMessageProps) => {
   const profile = useStore(profileStore);
 
   // Extract images from parts - look for file parts with image mime types
-  const images =
-    parts?.filter(
-      (part): part is FileUIPart => part.type === 'file' && 'mimeType' in part && part.mimeType.startsWith('image/'),
-    ) || [];
+  const images = useMemo(() => {
+    return (
+      parts?.filter(
+        (part): part is FileUIPart => part.type === 'file' && 'mimeType' in part && part.mimeType.startsWith('image/'),
+      ) || []
+    );
+  }, [parts]);
+
+  const textContent = useMemo(() => {
+    if (Array.isArray(content)) {
+      const textItem = content.find((item) => item.type === 'text');
+
+      return stripMetadata(textItem?.text || '');
+    }
+
+    return stripMetadata(content);
+  }, [content]);
 
   if (Array.isArray(content)) {
-    const textItem = content.find((item) => item.type === 'text');
-    const textContent = stripMetadata(textItem?.text || '');
-
     return (
       <div className="overflow-hidden flex flex-col gap-3 items-center ">
         <div className="flex flex-row items-start justify-center overflow-hidden shrink-0 self-start">
@@ -71,8 +81,6 @@ export const UserMessage = memo(({ content, parts }: UserMessageProps) => {
       </div>
     );
   }
-
-  const textContent = stripMetadata(content);
 
   return (
     <div className="flex flex-col bg-accent-500/10 backdrop-blur-sm px-5 p-3.5 w-auto rounded-lg ml-auto">
