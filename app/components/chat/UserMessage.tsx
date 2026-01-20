@@ -27,17 +27,18 @@ export const UserMessage = memo(({ content, parts }: UserMessageProps) => {
   const profile = useStore(profileStore);
 
   // Extract images from parts - look for file parts with image mime types
-  const images = useMemo(
-    () =>
+  const images = useMemo(() => {
+    return (
       parts?.filter(
         (part): part is FileUIPart => part.type === 'file' && 'mimeType' in part && part.mimeType.startsWith('image/'),
-      ) || [],
-    [parts],
-  );
+      ) || []
+    );
+  }, [parts]);
 
   const textContent = useMemo(() => {
     if (Array.isArray(content)) {
       const textItem = content.find((item) => item.type === 'text');
+
       return stripMetadata(textItem?.text || '');
     }
 
