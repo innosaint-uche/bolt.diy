@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import type { BundledLanguage } from 'shiki';
 import { createScopedLogger } from '~/utils/logger';
@@ -26,6 +26,22 @@ interface MarkdownProps {
 export const Markdown = memo(
   ({ children, html = false, limitedMarkdown = false, append, setChatMode, model, provider }: MarkdownProps) => {
     logger.trace('Render');
+
+    /*
+     * Prevent ReactMarkdown from re-rendering when these props change by using refs
+     * for event handlers in components
+     */
+    const appendRef = useRef(append);
+    appendRef.current = append;
+
+    const setChatModeRef = useRef(setChatMode);
+    setChatModeRef.current = setChatMode;
+
+    const modelRef = useRef(model);
+    modelRef.current = model;
+
+    const providerRef = useRef(provider);
+    providerRef.current = provider;
 
     const components = useMemo(() => {
       return {
@@ -146,6 +162,11 @@ export const Markdown = memo(
                 data-path={path}
                 data-href={href}
                 onClick={() => {
+                  const append = appendRef.current;
+                  const setChatMode = setChatModeRef.current;
+                  const model = modelRef.current;
+                  const provider = providerRef.current;
+
                   if (type === 'file') {
                     openArtifactInWorkbench(path);
                   } else if (type === 'message' && append) {
@@ -193,13 +214,16 @@ export const Markdown = memo(
       } satisfies Components;
     }, []);
 
+    const memoizedRemarkPlugins = useMemo(() => remarkPlugins(limitedMarkdown), [limitedMarkdown]);
+    const memoizedRehypePlugins = useMemo(() => rehypePlugins(html), [html]);
+
     return (
       <ReactMarkdown
         allowedElements={allowedHTMLElements}
         className={styles.MarkdownContent}
         components={components}
-        remarkPlugins={remarkPlugins(limitedMarkdown)}
-        rehypePlugins={rehypePlugins(html)}
+        remarkPlugins={memoizedRemarkPlugins}
+        rehypePlugins={memoizedRehypePlugins}
       >
         {stripCodeFenceFromArtifact(children)}
       </ReactMarkdown>
