@@ -62,12 +62,12 @@ export const Messages = memo(
               const isHidden = annotations?.includes('hidden');
 
               if (isHidden) {
-                return <Fragment key={messageId} />;
+                return <Fragment key={index} />;
               }
 
               return (
                 <div
-                  key={messageId}
+                  key={index}
                   className={classNames('flex gap-4 py-3 w-full rounded-lg', {
                     'mt-4': !isFirst,
                   })}
