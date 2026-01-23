@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import type { BundledLanguage } from 'shiki';
 import { createScopedLogger } from '~/utils/logger';
@@ -26,6 +26,9 @@ interface MarkdownProps {
 export const Markdown = memo(
   ({ children, html = false, limitedMarkdown = false, append, setChatMode, model, provider }: MarkdownProps) => {
     logger.trace('Render');
+
+    const propsRef = useRef({ append, setChatMode, model, provider });
+    propsRef.current = { append, setChatMode, model, provider };
 
     const components = useMemo(() => {
       return {
@@ -146,6 +149,8 @@ export const Markdown = memo(
                 data-path={path}
                 data-href={href}
                 onClick={() => {
+                  const { append, setChatMode, model, provider } = propsRef.current;
+
                   if (type === 'file') {
                     openArtifactInWorkbench(path);
                   } else if (type === 'message' && append) {
