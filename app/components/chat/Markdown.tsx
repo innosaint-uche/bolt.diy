@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import type { BundledLanguage } from 'shiki';
 import { createScopedLogger } from '~/utils/logger';
@@ -26,6 +26,19 @@ interface MarkdownProps {
 export const Markdown = memo(
   ({ children, html = false, limitedMarkdown = false, append, setChatMode, model, provider }: MarkdownProps) => {
     logger.trace('Render');
+
+    const savedAppend = useRef(append);
+    const savedSetChatMode = useRef(setChatMode);
+    const savedModel = useRef(model);
+    const savedProvider = useRef(provider);
+
+    savedAppend.current = append;
+    savedSetChatMode.current = setChatMode;
+    savedModel.current = model;
+    savedProvider.current = provider;
+
+    const memoizedRemarkPlugins = useMemo(() => remarkPlugins(limitedMarkdown), [limitedMarkdown]);
+    const memoizedRehypePlugins = useMemo(() => rehypePlugins(html), [html]);
 
     const components = useMemo(() => {
       return {
@@ -146,6 +159,11 @@ export const Markdown = memo(
                 data-path={path}
                 data-href={href}
                 onClick={() => {
+                  const append = savedAppend.current;
+                  const setChatMode = savedSetChatMode.current;
+                  const model = savedModel.current;
+                  const provider = savedProvider.current;
+
                   if (type === 'file') {
                     openArtifactInWorkbench(path);
                   } else if (type === 'message' && append) {
@@ -198,8 +216,8 @@ export const Markdown = memo(
         allowedElements={allowedHTMLElements}
         className={styles.MarkdownContent}
         components={components}
-        remarkPlugins={remarkPlugins(limitedMarkdown)}
-        rehypePlugins={rehypePlugins(html)}
+        remarkPlugins={memoizedRemarkPlugins}
+        rehypePlugins={memoizedRehypePlugins}
       >
         {stripCodeFenceFromArtifact(children)}
       </ReactMarkdown>
