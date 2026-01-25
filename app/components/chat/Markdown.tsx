@@ -193,13 +193,16 @@ export const Markdown = memo(
       } satisfies Components;
     }, []);
 
+    const remarkPluginsList = useMemo(() => remarkPlugins(limitedMarkdown), [limitedMarkdown]);
+    const rehypePluginsList = useMemo(() => rehypePlugins(html), [html]);
+
     return (
       <ReactMarkdown
         allowedElements={allowedHTMLElements}
         className={styles.MarkdownContent}
         components={components}
-        remarkPlugins={remarkPlugins(limitedMarkdown)}
-        rehypePlugins={rehypePlugins(html)}
+        remarkPlugins={remarkPluginsList}
+        rehypePlugins={rehypePluginsList}
       >
         {stripCodeFenceFromArtifact(children)}
       </ReactMarkdown>
