@@ -27,9 +27,11 @@ export const Markdown = memo(
   ({ children, html = false, limitedMarkdown = false, append, setChatMode, model, provider }: MarkdownProps) => {
     logger.trace('Render');
 
-    // Store props in a ref to allow the 'components' object to remain stable (empty dependency array)
-    // while still accessing the latest props in event handlers. This prevents unnecessary
-    // re-renders of ReactMarkdown which are expensive.
+    /*
+     * Store props in a ref to allow the 'components' object to remain stable (empty dependency array)
+     * while still accessing the latest props in event handlers. This prevents unnecessary
+     * re-renders of ReactMarkdown which are expensive.
+     */
     const propsRef = useRef({ append, setChatMode, model, provider });
 
     useEffect(() => {
