@@ -63,39 +63,37 @@ export const Messages = memo(
             const isFirst = index === 0;
             const isHidden = annotations?.includes('hidden');
 
-            if (isHidden) {
-              return <Fragment key={index} />;
-            }
+              if (isHidden) {
+                return <Fragment key={messageId} />;
+              }
 
-            return (
-              <motion.div
-                key={messageId}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-                className={classNames('flex gap-4 py-3 w-full rounded-lg', {
-                  'mt-4': !isFirst,
-                })}
-              >
-                <div className="grid grid-col-1 w-full">
-                  {isUserMessage ? (
-                    <UserMessage content={content} parts={parts} />
-                  ) : (
-                    <AssistantMessage
-                      content={content}
-                      annotations={message.annotations}
-                      messageId={messageId}
-                      onRewind={handleRewind}
-                      onFork={handleFork}
-                      append={props.append}
-                      chatMode={props.chatMode}
-                      setChatMode={props.setChatMode}
-                      model={props.model}
-                      provider={props.provider}
-                      parts={parts}
-                      addToolResult={props.addToolResult}
-                    />
-                  )}
+              return (
+                <div
+                  key={messageId}
+                  className={classNames('flex gap-4 py-3 w-full rounded-lg', {
+                    'mt-4': !isFirst,
+                  })}
+                >
+                  <div className="grid grid-col-1 w-full">
+                    {isUserMessage ? (
+                      <UserMessage content={content} parts={parts} />
+                    ) : (
+                      <AssistantMessage
+                        content={content}
+                        annotations={message.annotations}
+                        messageId={messageId}
+                        onRewind={handleRewind}
+                        onFork={handleFork}
+                        append={props.append}
+                        chatMode={props.chatMode}
+                        setChatMode={props.setChatMode}
+                        model={props.model}
+                        provider={props.provider}
+                        parts={parts}
+                        addToolResult={props.addToolResult}
+                      />
+                    )}
+                  </div>
                 </div>
               </motion.div>
             );
