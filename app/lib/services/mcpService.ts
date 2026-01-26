@@ -4,8 +4,8 @@ import {
   type Message,
   type DataStreamWriter,
   convertToCoreMessages,
-  formatDataStreamPart,
 } from 'ai';
+import { formatDataStreamPart } from '@ai-sdk/ui-utils';
 // import { Experimental_StdioMCPTransport } from 'ai/mcp-stdio';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { z } from 'zod';
