@@ -1,6 +1,6 @@
 
 import { type ActionFunctionArgs } from '@remix-run/cloudflare';
-import { createDataStream } from 'ai';
+
 import { streamText } from '~/lib/.server/llm/stream-text';
 import { stripIndents } from '~/utils/stripIndent';
 import { PLANNER_PROMPT } from '~/lib/common/prompts/prompts';
@@ -21,31 +21,24 @@ async function plannerAction({ context, request }: ActionFunctionArgs) {
     const apiKeys = getApiKeysFromCookie(cookieHeader);
     const providerSettings = getProviderSettingsFromCookie(cookieHeader);
 
-    const dataStream = createDataStream({
-        async execute(dataStream) {
-            const result = await streamText({
-                messages: [
-                    {
-                        role: 'system',
-                        content: PLANNER_PROMPT,
-                    },
-                    ...messages,
-                ],
-                env: context.cloudflare?.env,
-                options: {
-                    test: 'test',
-                },
-                apiKeys,
-                files: {},
-                providerSettings,
-                chatMode: 'discuss',
-            });
-
-            result.mergeIntoDataStream(dataStream);
+    const result = await streamText({
+        messages: [
+            {
+                role: 'system',
+                content: PLANNER_PROMPT,
+            },
+            ...messages,
+        ],
+        env: context.cloudflare?.env,
+        options: {
         },
+        apiKeys,
+        files: {},
+        providerSettings,
+        chatMode: 'discuss',
     });
 
-    return new Response(dataStream, {
+    return result.toTextStreamResponse({
         headers: {
             'Content-Type': 'text/event-stream; charset=utf-8',
             'Connection': 'keep-alive',
