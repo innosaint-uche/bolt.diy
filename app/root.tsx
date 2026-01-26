@@ -14,6 +14,7 @@ import { cssTransition, ToastContainer } from 'react-toastify';
 import reactToastifyStyles from 'react-toastify/dist/ReactToastify.css?url';
 import globalStyles from './styles/index.scss?url';
 import xtermStyles from '@xterm/xterm/css/xterm.css?url';
+import glassStyles from './styles/glass.css?url';
 
 import 'virtual:uno.css';
 
@@ -32,6 +33,7 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindReset },
   { rel: 'stylesheet', href: globalStyles },
   { rel: 'stylesheet', href: xtermStyles },
+  { rel: 'stylesheet', href: glassStyles },
   {
     rel: 'preconnect',
     href: 'https://fonts.googleapis.com',

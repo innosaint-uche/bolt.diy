@@ -1,6 +1,5 @@
 import { useStore } from '@nanostores/react';
-import type { Message } from 'ai';
-import { useChat } from '@ai-sdk/react';
+import { useChat, type Message } from '@ai-sdk/react';
 import { useAnimate } from 'framer-motion';
 import { memo, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { toast } from 'react-toastify';
@@ -114,8 +113,30 @@ export const ChatImpl = memo(
     const [animationScope, animate] = useAnimate();
     const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
     const [chatMode, setChatMode] = useState<'discuss' | 'build'>('build');
+    const [isPlanning, setIsPlanning] = useState(false);
+    const [contextBuffer, setContextBuffer] = useState('');
     const [selectedElement, setSelectedElement] = useState<ElementInfo | null>(null);
     const mcpSettings = useMCPStore((state) => state.settings);
+
+    const handleKnowledgeUpload = async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/knowledge', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await res.json();
+        if (data.text) {
+          setContextBuffer((prev) => prev + `\n\n[Context: ${data.filename}]\n${data.text}`);
+          toast.success(`Added ${data.filename} to context`);
+        } else {
+          toast.error('Failed to extract text');
+        }
+      } catch (e) {
+        toast.error('Upload failed');
+      }
+    };
 
     const {
       messages,
@@ -407,6 +428,11 @@ export const ChatImpl = memo(
         finalMessageContent = messageContent + elementInfo;
       }
 
+      if (contextBuffer) {
+        finalMessageContent = contextBuffer + "\n\n" + finalMessageContent;
+        setContextBuffer(''); // Clear buffer after sending
+      }
+
       runAnimation();
 
       if (!chatStarted) {
@@ -659,9 +685,12 @@ export const ChatImpl = memo(
         clearDeployAlert={() => workbenchStore.clearDeployAlert()}
         llmErrorAlert={llmErrorAlert}
         clearLlmErrorAlert={clearApiErrorAlert}
-        data={chatData}
+        data={chatData as JSONValue[] | undefined}
         chatMode={chatMode}
         setChatMode={setChatMode}
+        isPlanning={isPlanning}
+        setIsPlanning={setIsPlanning}
+        handleKnowledgeUpload={handleKnowledgeUpload}
         append={append}
         designScheme={designScheme}
         setDesignScheme={setDesignScheme}

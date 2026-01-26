@@ -1,4 +1,4 @@
-import type { Message } from 'ai';
+import type { Message } from '@ai-sdk/react';
 import { Fragment, useCallback, memo } from 'react';
 import { classNames } from '~/utils/classNames';
 import { AssistantMessage } from './AssistantMessage';
@@ -23,6 +23,8 @@ interface MessagesProps {
   provider?: ProviderInfo;
   addToolResult: ({ toolCallId, result }: { toolCallId: string; result: any }) => void;
 }
+
+import { motion } from 'framer-motion';
 
 export const Messages = memo(
   forwardRef<HTMLDivElement, MessagesProps>((props: MessagesProps, ref: ForwardedRef<HTMLDivElement> | undefined) => {
@@ -56,45 +58,48 @@ export const Messages = memo(
       <div id={id} className={props.className} ref={ref}>
         {messages.length > 0
           ? messages.map((message, index) => {
-              const { role, content, id: messageId, annotations, parts } = message;
-              const isUserMessage = role === 'user';
-              const isFirst = index === 0;
-              const isHidden = annotations?.includes('hidden');
+            const { role, content, id: messageId, annotations, parts } = message;
+            const isUserMessage = role === 'user';
+            const isFirst = index === 0;
+            const isHidden = annotations?.includes('hidden');
 
-              if (isHidden) {
-                return <Fragment key={index} />;
-              }
+            if (isHidden) {
+              return <Fragment key={index} />;
+            }
 
-              return (
-                <div
-                  key={index}
-                  className={classNames('flex gap-4 py-3 w-full rounded-lg', {
-                    'mt-4': !isFirst,
-                  })}
-                >
-                  <div className="grid grid-col-1 w-full">
-                    {isUserMessage ? (
-                      <UserMessage content={content} parts={parts} />
-                    ) : (
-                      <AssistantMessage
-                        content={content}
-                        annotations={message.annotations}
-                        messageId={messageId}
-                        onRewind={handleRewind}
-                        onFork={handleFork}
-                        append={props.append}
-                        chatMode={props.chatMode}
-                        setChatMode={props.setChatMode}
-                        model={props.model}
-                        provider={props.provider}
-                        parts={parts}
-                        addToolResult={props.addToolResult}
-                      />
-                    )}
-                  </div>
+            return (
+              <motion.div
+                key={messageId}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className={classNames('flex gap-4 py-3 w-full rounded-lg', {
+                  'mt-4': !isFirst,
+                })}
+              >
+                <div className="grid grid-col-1 w-full">
+                  {isUserMessage ? (
+                    <UserMessage content={content} parts={parts} />
+                  ) : (
+                    <AssistantMessage
+                      content={content}
+                      annotations={message.annotations}
+                      messageId={messageId}
+                      onRewind={handleRewind}
+                      onFork={handleFork}
+                      append={props.append}
+                      chatMode={props.chatMode}
+                      setChatMode={props.setChatMode}
+                      model={props.model}
+                      provider={props.provider}
+                      parts={parts}
+                      addToolResult={props.addToolResult}
+                    />
+                  )}
                 </div>
-              );
-            })
+              </motion.div>
+            );
+          })
           : null}
         {isStreaming && (
           <div className="text-center w-full  text-bolt-elements-item-contentAccent i-svg-spinners:3-dots-fade text-4xl mt-4"></div>
