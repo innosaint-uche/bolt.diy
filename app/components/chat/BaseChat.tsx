@@ -2,7 +2,8 @@
  * @ts-nocheck
  * Preventing TS checks with files presented in the video for a better presentation.
  */
-import type { JSONValue, Message } from 'ai';
+import type { JSONValue } from 'ai';
+import type { Message } from '@ai-sdk/react';
 import React, { type RefCallback, useEffect, useState } from 'react';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Menu } from '~/components/sidebar/Menu.client';
@@ -81,6 +82,9 @@ interface BaseChatProps {
   selectedElement?: ElementInfo | null;
   setSelectedElement?: (element: ElementInfo | null) => void;
   addToolResult?: ({ toolCallId, result }: { toolCallId: string; result: any }) => void;
+  isPlanning?: boolean;
+  setIsPlanning?: (isPlanning: boolean) => void;
+  handleKnowledgeUpload?: (file: File) => Promise<void>;
 }
 
 export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
@@ -130,6 +134,9 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
       addToolResult = () => {
         throw new Error('addToolResult not implemented');
       },
+      isPlanning,
+      setIsPlanning,
+      handleKnowledgeUpload,
     },
     ref,
   ) => {
@@ -465,6 +472,9 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   setDesignScheme={setDesignScheme}
                   selectedElement={selectedElement}
                   setSelectedElement={setSelectedElement}
+                  isPlanning={isPlanning}
+                  setIsPlanning={setIsPlanning}
+                  handleKnowledgeUpload={handleKnowledgeUpload}
                 />
               </div>
             </StickToBottom>

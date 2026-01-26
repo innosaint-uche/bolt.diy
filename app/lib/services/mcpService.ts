@@ -1,12 +1,15 @@
+// Force file invalidation
 import {
-  experimental_createMCPClient,
   type ToolSet,
-  type Message,
-  type DataStreamWriter,
-  convertToCoreMessages,
-  formatDataStreamPart,
 } from 'ai';
-import { Experimental_StdioMCPTransport } from 'ai/mcp-stdio';
+
+export interface DataStreamWriter {
+  write(data: string): void;
+  writeMessageAnnotation(annotation: any): void;
+}
+import { formatDataStreamPart, type Message } from '@ai-sdk/ui-utils';
+import { convertToCoreMessages } from '~/utils/ai-polyfills';
+// import { Experimental_StdioMCPTransport } from 'ai/mcp-stdio';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { z } from 'zod';
 import type { ToolCallAnnotation } from '~/types/context';
@@ -173,26 +176,13 @@ export class MCPService {
     config: StreamableHTTPServerConfig,
   ): Promise<MCPClient> {
     logger.debug(`Creating Streamable-HTTP client for ${serverName} with URL: ${config.url}`);
-
-    const client = await experimental_createMCPClient({
-      transport: new StreamableHTTPClientTransport(new URL(config.url), {
-        requestInit: {
-          headers: config.headers,
-        },
-      }),
-    });
-
-    return Object.assign(client, { serverName });
+    throw new Error('MCP Experimental Client not supported in this build.');
   }
 
   private async _createSSEClient(serverName: string, config: SSEServerConfig): Promise<MCPClient> {
     logger.debug(`Creating SSE client for ${serverName} with URL: ${config.url}`);
 
-    const client = await experimental_createMCPClient({
-      transport: config,
-    });
-
-    return Object.assign(client, { serverName });
+    throw new Error('MCP Experimental Client not supported in this build.');
   }
 
   private async _createStdioClient(serverName: string, config: STDIOServerConfig): Promise<MCPClient> {
@@ -200,9 +190,7 @@ export class MCPService {
       `Creating STDIO client for '${serverName}' with command: '${config.command}' ${config.args?.join(' ') || ''}`,
     );
 
-    const client = await experimental_createMCPClient({ transport: new Experimental_StdioMCPTransport(config) });
-
-    return Object.assign(client, { serverName });
+    throw new Error('MCP Experimental Client not supported in this build.');
   }
 
   private _registerTools(serverName: string, tools: ToolSet) {

@@ -1,0 +1,33 @@
+
+:root {
+  --glass-border: 1px solid rgba(255, 255, 255, 0.125);
+  --glass-bg: rgba(17, 24, 39, 0.7);
+  --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --glass-backdrop: blur(10px);
+  --glass-radius: 12px;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--glass-radius);
+}
+
+.glass-panel {
+  @apply glass;
+  padding: 1rem;
+}
+
+.glass-button {
+  @apply glass;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}

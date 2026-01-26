@@ -354,7 +354,7 @@ export const Menu = () => {
         initial="closed"
         animate={open ? 'open' : 'closed'}
         variants={menuVariants}
-        style={{ width: '340px' }}
+        style={{ width: 'min(340px, 100vw)' }}
         className={classNames(
           'flex selection-accent flex-col side-menu fixed top-0 h-full rounded-r-2xl',
           'bg-white dark:bg-gray-950 border-r border-bolt-elements-borderColor',
@@ -552,7 +552,7 @@ export const Menu = () => {
             <ThemeSwitch />
           </div>
         </div>
-      </motion.div>
+      </motion.div >
 
       <ControlPanel open={isSettingsOpen} onClose={handleSettingsClose} />
     </>
