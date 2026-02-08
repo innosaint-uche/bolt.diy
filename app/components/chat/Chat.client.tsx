@@ -125,19 +125,22 @@ export const ChatImpl = memo(
     const handleKnowledgeUpload = async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
+
       try {
         const res = await fetch('/api/knowledge', {
           method: 'POST',
           body: formData,
         });
-        const data = await res.json() as { text: string; filename: string };
+
+        const data = (await res.json()) as { text: string; filename: string };
+
         if (data.text) {
           setContextBuffer((prev) => prev + `\n\n[Context: ${data.filename}]\n${data.text}`);
           toast.success(`Added ${data.filename} to context`);
         } else {
           toast.error('Failed to extract text');
         }
-      } catch (e) {
+      } catch {
         toast.error('Upload failed');
       }
     };
@@ -433,7 +436,7 @@ export const ChatImpl = memo(
       }
 
       if (contextBuffer) {
-        finalMessageContent = contextBuffer + "\n\n" + finalMessageContent;
+        finalMessageContent = `${contextBuffer}\n\n${finalMessageContent}`;
         setContextBuffer(''); // Clear buffer after sending
       }
 

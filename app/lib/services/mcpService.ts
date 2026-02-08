@@ -1,16 +1,7 @@
-// Force file invalidation
-import {
-  type ToolSet,
-} from 'ai';
+import type { ToolSet } from 'ai';
 
-export interface DataStreamWriter {
-  write(data: string): void;
-  writeMessageAnnotation(annotation: any): void;
-}
 import { formatDataStreamPart, type Message } from '@ai-sdk/ui-utils';
 import { convertToCoreMessages } from '~/utils/ai-polyfills';
-// import { Experimental_StdioMCPTransport } from 'ai/mcp-stdio';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { z } from 'zod';
 import type { ToolCallAnnotation } from '~/types/context';
 import {
@@ -22,6 +13,11 @@ import {
 import { createScopedLogger } from '~/utils/logger';
 
 const logger = createScopedLogger('mcp-service');
+
+export interface DataStreamWriter {
+  write(data: string): void;
+  writeMessageAnnotation(annotation: any): void;
+}
 
 export const stdioServerConfigSchema = z
   .object({
@@ -85,7 +81,7 @@ export type ToolCall = {
   type: 'tool-call';
   toolCallId: string;
   toolName: string;
-  args: Record<string, unknown>;
+  args?: Record<string, unknown>;
 };
 
 export type MCPServerTools = Record<string, MCPServer>;

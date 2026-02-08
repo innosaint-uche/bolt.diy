@@ -24,8 +24,6 @@ interface MessagesProps {
   addToolResult: ({ toolCallId, result }: { toolCallId: string; result: any }) => void;
 }
 
-import { motion } from 'framer-motion';
-
 export const Messages = memo(
   forwardRef<HTMLDivElement, MessagesProps>((props: MessagesProps, ref: ForwardedRef<HTMLDivElement> | undefined) => {
     const { id, isStreaming = false, messages = [] } = props;
@@ -58,10 +56,10 @@ export const Messages = memo(
       <div id={id} className={props.className} ref={ref}>
         {messages.length > 0
           ? messages.map((message, index) => {
-            const { role, content, id: messageId, annotations, parts } = message;
-            const isUserMessage = role === 'user';
-            const isFirst = index === 0;
-            const isHidden = annotations?.includes('hidden');
+              const { role, content, id: messageId, annotations, parts } = message;
+              const isUserMessage = role === 'user';
+              const isFirst = index === 0;
+              const isHidden = annotations?.includes('hidden');
 
               if (isHidden) {
                 return <Fragment key={messageId} />;
@@ -95,9 +93,8 @@ export const Messages = memo(
                     )}
                   </div>
                 </div>
-              </motion.div>
-            );
-          })
+              );
+            })
           : null}
         {isStreaming && (
           <div className="text-center w-full  text-bolt-elements-item-contentAccent i-svg-spinners:3-dots-fade text-4xl mt-4"></div>

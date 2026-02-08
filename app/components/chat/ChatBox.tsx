@@ -272,26 +272,10 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = '.md,.txt,.json,.js,.ts,.tsx,.jsx'; // Basic text formats
+
                 input.onchange = async (e) => {
                   const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file && props.handleKnowledgeUpload) {
-                    await props.handleKnowledgeUpload(file);
-                  }
-                };
-                input.click();
-              }}
-            >
-              <div className="i-ph:book-bookmark text-xl" />
-            </IconButton>
-            <IconButton
-              title="Add Knowledge Context"
-              className="transition-all"
-              onClick={() => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.md,.txt,.json,.js,.ts,.tsx,.jsx'; // Basic text formats
-                input.onchange = async (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0];
+
                   if (file && props.handleKnowledgeUpload) {
                     await props.handleKnowledgeUpload(file);
                   }
@@ -321,21 +305,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
             </IconButton>
 
             <IconButton
-              title={props.isPlanning ? "Disable Planning Mode" : "Enable Planning Mode"}
-              className={classNames(
-                'transition-all flex items-center gap-1 px-1.5',
-                props.isPlanning
-                  ? '!bg-bolt-elements-item-backgroundAccent !text-bolt-elements-item-contentAccent'
-                  : 'bg-bolt-elements-item-backgroundDefault text-bolt-elements-item-contentDefault',
-              )}
-              onClick={() => props.setIsPlanning?.(!props.isPlanning)}
-            >
-              <div className="i-ph:compass text-xl" />
-              {props.isPlanning ? <span>Plan</span> : <span />}
-            </IconButton>
-
-            <IconButton
-              title={props.isPlanning ? "Disable Planning Mode" : "Enable Planning Mode"}
+              title={props.isPlanning ? 'Disable Planning Mode' : 'Enable Planning Mode'}
               className={classNames(
                 'transition-all flex items-center gap-1 px-1.5',
                 props.isPlanning
