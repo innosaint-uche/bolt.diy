@@ -25,6 +25,7 @@ async function plannerAction({ context, request }: ActionFunctionArgs) {
       ...messages,
     ],
     env: context.cloudflare?.env,
+    options: {},
     apiKeys,
     files: {},
     providerSettings,

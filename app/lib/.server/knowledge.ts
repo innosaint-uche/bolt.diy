@@ -5,9 +5,9 @@ export type KnowledgeFile = {
 };
 
 export async function extractTextFromFile(file: File): Promise<string> {
-  /**
-   * Simple text extraction for now.
-   * Extend this to support PDF/Docx using libraries if environment permits.
+  /*
+   * Simple text extraction for now
+   * Extend this to support PDF/Docx using libraries if environment permits
    */
   if (file.type === 'application/pdf') {
     return `[PDF Content extraction not yet implemented for ${file.name}]`;

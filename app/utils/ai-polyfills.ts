@@ -1,10 +1,12 @@
 import type { Message } from '@ai-sdk/ui-utils';
 
-export function convertToCoreMessages(
-  messages: Array<Pick<Message, 'role' | 'content'>>,
-): Array<{ role: 'user' | 'assistant' | 'system' | 'tool'; content: string }> {
-  return messages.map((message) => ({
-    role: message.role as any,
-    content: message.content,
-  }));
+// import type { CoreMessage } from 'ai';
+
+export function convertToCoreMessages(messages: Message[]): any[] {
+  return messages.map((m) => {
+    return {
+      role: m.role as any, // Simple cast, valid values are 'user' | 'assistant' | 'system'
+      content: m.content,
+    };
+  });
 }

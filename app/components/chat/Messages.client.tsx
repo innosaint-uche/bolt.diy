@@ -66,33 +66,34 @@ export const Messages = memo(
               }
 
               return (
-                <div
-                  key={messageId}
-                  className={classNames('flex gap-4 py-3 w-full rounded-lg', {
-                    'mt-4': !isFirst,
-                  })}
-                >
-                  <div className="grid grid-col-1 w-full">
-                    {isUserMessage ? (
-                      <UserMessage content={content} parts={parts} />
-                    ) : (
-                      <AssistantMessage
-                        content={content}
-                        annotations={message.annotations}
-                        messageId={messageId}
-                        onRewind={handleRewind}
-                        onFork={handleFork}
-                        append={props.append}
-                        chatMode={props.chatMode}
-                        setChatMode={props.setChatMode}
-                        model={props.model}
-                        provider={props.provider}
-                        parts={parts}
-                        addToolResult={props.addToolResult}
-                      />
-                    )}
+                <motion.div key={messageId} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  <div
+                    className={classNames('flex gap-4 py-3 w-full rounded-lg', {
+                      'mt-4': !isFirst,
+                    })}
+                  >
+                    <div className="grid grid-col-1 w-full">
+                      {isUserMessage ? (
+                        <UserMessage content={content} parts={parts} />
+                      ) : (
+                        <AssistantMessage
+                          content={content}
+                          annotations={message.annotations}
+                          messageId={messageId}
+                          onRewind={handleRewind}
+                          onFork={handleFork}
+                          append={props.append}
+                          chatMode={props.chatMode}
+                          setChatMode={props.setChatMode}
+                          model={props.model}
+                          provider={props.provider}
+                          parts={parts}
+                          addToolResult={props.addToolResult}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })
           : null}

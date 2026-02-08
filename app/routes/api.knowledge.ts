@@ -9,6 +9,14 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ error: 'No file provided' }, { status: 400 });
   }
 
+  if (!isSupportedFileType(file.type)) {
+    /*
+     * Allow passing anyway? No, validation is good.
+     * But lets be lenient with text/*
+     */
+    if (!file.type.startsWith('text/')) {
+      return json({ error: 'Unsupported file type' }, { status: 400 });
+    }
   if (!isSupportedFileType(file.type) && !file.type.startsWith('text/')) {
     return json({ error: 'Unsupported file type' }, { status: 400 });
   }

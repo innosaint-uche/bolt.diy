@@ -131,7 +131,6 @@ export const ChatImpl = memo(
           method: 'POST',
           body: formData,
         });
-
         const data = (await res.json()) as { text: string; filename: string };
 
         if (data.text) {
@@ -436,7 +435,7 @@ export const ChatImpl = memo(
       }
 
       if (contextBuffer) {
-        finalMessageContent = `${contextBuffer}\n\n${finalMessageContent}`;
+        finalMessageContent = contextBuffer + '\n\n' + finalMessageContent;
         setContextBuffer(''); // Clear buffer after sending
       }
 
