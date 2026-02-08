@@ -1,4 +1,4 @@
-import type { Message } from '@ai-sdk/ui-utils';
+import type { Message } from 'ai';
 import { generateId } from './fileUtils';
 import { detectProjectCommands, createCommandsMessage, escapeBoltTags } from './projectCommands';
 
