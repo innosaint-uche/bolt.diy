@@ -68,10 +68,11 @@ export async function mergeStreamIntoDataStream<TOOLS extends ToolSet>(
       case 'tool-result': {
         const toolResult = {
           toolCallId: part.toolCallId,
-          result: (part as TextStreamPart<TOOLS> & { output?: unknown }).output,
+          result: part.result,
         };
         writer.write(formatDataStreamPart('tool_result', toolResult as any));
         break;
+      }
       }
       case 'error':
         writer.write(formatDataStreamPart('error', stringifyError(part.error)));
