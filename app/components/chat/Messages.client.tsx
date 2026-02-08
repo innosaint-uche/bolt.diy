@@ -24,8 +24,6 @@ interface MessagesProps {
   addToolResult: ({ toolCallId, result }: { toolCallId: string; result: any }) => void;
 }
 
-import { motion } from 'framer-motion';
-
 export const Messages = memo(
   forwardRef<HTMLDivElement, MessagesProps>((props: MessagesProps, ref: ForwardedRef<HTMLDivElement> | undefined) => {
     const { id, isStreaming = false, messages = [] } = props;

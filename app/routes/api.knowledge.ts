@@ -17,6 +17,8 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!file.type.startsWith('text/')) {
       return json({ error: 'Unsupported file type' }, { status: 400 });
     }
+  if (!isSupportedFileType(file.type) && !file.type.startsWith('text/')) {
+    return json({ error: 'Unsupported file type' }, { status: 400 });
   }
 
   try {
