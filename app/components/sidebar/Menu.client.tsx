@@ -552,7 +552,7 @@ export const Menu = () => {
             <ThemeSwitch />
           </div>
         </div>
-      </motion.div >
+      </motion.div>
 
       <ControlPanel open={isSettingsOpen} onClose={handleSettingsClose} />
     </>

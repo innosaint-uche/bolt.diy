@@ -58,46 +58,46 @@ export const Messages = memo(
       <div id={id} className={props.className} ref={ref}>
         {messages.length > 0
           ? messages.map((message, index) => {
-            const { role, content, id: messageId, annotations, parts } = message;
-            const isUserMessage = role === 'user';
-            const isFirst = index === 0;
-            const isHidden = annotations?.includes('hidden');
+              const { role, content, id: messageId, annotations, parts } = message;
+              const isUserMessage = role === 'user';
+              const isFirst = index === 0;
+              const isHidden = annotations?.includes('hidden');
 
               if (isHidden) {
                 return <Fragment key={messageId} />;
               }
 
               return (
-                <div
-                  key={messageId}
-                  className={classNames('flex gap-4 py-3 w-full rounded-lg', {
-                    'mt-4': !isFirst,
-                  })}
-                >
-                  <div className="grid grid-col-1 w-full">
-                    {isUserMessage ? (
-                      <UserMessage content={content} parts={parts} />
-                    ) : (
-                      <AssistantMessage
-                        content={content}
-                        annotations={message.annotations}
-                        messageId={messageId}
-                        onRewind={handleRewind}
-                        onFork={handleFork}
-                        append={props.append}
-                        chatMode={props.chatMode}
-                        setChatMode={props.setChatMode}
-                        model={props.model}
-                        provider={props.provider}
-                        parts={parts}
-                        addToolResult={props.addToolResult}
-                      />
-                    )}
+                <motion.div key={messageId} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  <div
+                    className={classNames('flex gap-4 py-3 w-full rounded-lg', {
+                      'mt-4': !isFirst,
+                    })}
+                  >
+                    <div className="grid grid-col-1 w-full">
+                      {isUserMessage ? (
+                        <UserMessage content={content} parts={parts} />
+                      ) : (
+                        <AssistantMessage
+                          content={content}
+                          annotations={message.annotations}
+                          messageId={messageId}
+                          onRewind={handleRewind}
+                          onFork={handleFork}
+                          append={props.append}
+                          chatMode={props.chatMode}
+                          setChatMode={props.setChatMode}
+                          model={props.model}
+                          provider={props.provider}
+                          parts={parts}
+                          addToolResult={props.addToolResult}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            );
-          })
+                </motion.div>
+              );
+            })
           : null}
         {isStreaming && (
           <div className="text-center w-full  text-bolt-elements-item-contentAccent i-svg-spinners:3-dots-fade text-4xl mt-4"></div>
