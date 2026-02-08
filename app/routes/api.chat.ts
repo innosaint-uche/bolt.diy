@@ -1,10 +1,9 @@
 import { type ActionFunctionArgs } from '@remix-run/cloudflare';
-import { generateId, stepCountIs, type LanguageModelUsage } from 'ai';
+import { createDataStream, generateId } from 'ai';
 import { MAX_RESPONSE_SEGMENTS, MAX_TOKENS, type FileMap } from '~/lib/.server/llm/constants';
 import { CONTINUE_PROMPT } from '~/lib/common/prompts/prompts';
 import { streamText, type Messages, type StreamingOptions } from '~/lib/.server/llm/stream-text';
 import SwitchableStream from '~/lib/.server/llm/switchable-stream';
-import { createDataStream, mergeStreamIntoDataStream } from '~/lib/.server/llm/data-stream';
 import type { IProviderSetting } from '~/types/model';
 import { createScopedLogger } from '~/utils/logger';
 import { getFilePaths, selectContext } from '~/lib/.server/llm/select-context';
@@ -81,14 +80,6 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
     promptTokens: 0,
     totalTokens: 0,
   };
-  const addUsage = (usage?: LanguageModelUsage) => {
-    const promptTokens = usage?.inputTokens || 0;
-    const completionTokens = usage?.outputTokens || 0;
-
-    cumulativeUsage.promptTokens += promptTokens;
-    cumulativeUsage.completionTokens += completionTokens;
-    cumulativeUsage.totalTokens += promptTokens + completionTokens;
-  };
   const encoder: TextEncoder = new TextEncoder();
   let progressCounter: number = 1;
 
@@ -137,7 +128,9 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             onFinish(resp) {
               if (resp.usage) {
                 logger.debug('createSummary token usage', JSON.stringify(resp.usage));
-                addUsage(resp.usage);
+                cumulativeUsage.completionTokens += resp.usage.completionTokens || 0;
+                cumulativeUsage.promptTokens += resp.usage.promptTokens || 0;
+                cumulativeUsage.totalTokens += resp.usage.totalTokens || 0;
               }
             },
           });
@@ -179,7 +172,9 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             onFinish(resp) {
               if (resp.usage) {
                 logger.debug('selectContext token usage', JSON.stringify(resp.usage));
-                addUsage(resp.usage);
+                cumulativeUsage.completionTokens += resp.usage.completionTokens || 0;
+                cumulativeUsage.promptTokens += resp.usage.promptTokens || 0;
+                cumulativeUsage.totalTokens += resp.usage.totalTokens || 0;
               }
             },
           });
@@ -216,26 +211,20 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           supabaseConnection: supabase,
           toolChoice: 'auto',
           tools: mcpService.toolsWithoutExecute,
-          stopWhen: stepCountIs(maxLLMSteps),
+          maxSteps: maxLLMSteps,
           onStepFinish: ({ toolCalls }) => {
             // add tool call annotations for frontend processing
             toolCalls.forEach((toolCall) => {
-              mcpService.processToolCall(
-                {
-                  type: 'tool-call',
-                  toolCallId: toolCall.toolCallId,
-                  toolName: toolCall.toolName,
-                  args: 'input' in toolCall ? toolCall.input : undefined,
-                },
-                dataStream,
-              );
+              mcpService.processToolCall(toolCall, dataStream);
             });
           },
           onFinish: async ({ text: content, finishReason, usage }) => {
             logger.debug('usage', JSON.stringify(usage));
 
             if (usage) {
-              addUsage(usage);
+              cumulativeUsage.completionTokens += usage.completionTokens || 0;
+              cumulativeUsage.promptTokens += usage.promptTokens || 0;
+              cumulativeUsage.totalTokens += usage.totalTokens || 0;
             }
 
             if (finishReason !== 'length') {
@@ -293,13 +282,18 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
               messageSliceId,
             });
 
-            await mergeStreamIntoDataStream(result, dataStream, {
-              onPart: (part) => {
+            result.mergeIntoDataStream(dataStream);
+
+            (async () => {
+              for await (const part of result.fullStream) {
                 if (part.type === 'error') {
-                  logger.error(`${part.error}`);
+                  const error: any = part.error;
+                  logger.error(`${error}`);
+
+                  return;
                 }
-              },
-            });
+              }
+            })();
 
             return;
           },
@@ -329,24 +323,28 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           messageSliceId,
         });
 
-        await mergeStreamIntoDataStream(result, dataStream, {
-          onPart: (part) => {
+        (async () => {
+          for await (const part of result.fullStream) {
             streamRecovery.updateActivity();
 
             if (part.type === 'error') {
-              logger.error('Streaming error:', part.error);
+              const error: any = part.error;
+              logger.error('Streaming error:', error);
               streamRecovery.stop();
 
               // Enhanced error handling for common streaming issues
-              if (part.error instanceof Error && part.error.message?.includes('Invalid JSON response')) {
+              if (error.message?.includes('Invalid JSON response')) {
                 logger.error('Invalid JSON response detected - likely malformed API response');
-              } else if (part.error instanceof Error && part.error.message?.includes('token')) {
+              } else if (error.message?.includes('token')) {
                 logger.error('Token-related error detected - possible token limit exceeded');
               }
+
+              return;
             }
-          },
-        });
-        streamRecovery.stop();
+          }
+          streamRecovery.stop();
+        })();
+        result.mergeIntoDataStream(dataStream);
       },
       onError: (error: any) => {
         // Provide more specific error messages for common issues

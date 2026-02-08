@@ -1,4 +1,4 @@
-import type { Message } from '@ai-sdk/ui-utils';
+import type { Message } from 'ai';
 import { useCallback, useState } from 'react';
 import { EnhancedStreamingMessageParser } from '~/lib/runtime/enhanced-message-parser';
 import { workbenchStore } from '~/lib/stores/workbench';
@@ -49,7 +49,10 @@ const messageParser = new EnhancedStreamingMessageParser({
     },
   },
 });
-const extractTextContent = (message: Message) => message.content;
+const extractTextContent = (message: Message) =>
+  Array.isArray(message.content)
+    ? (message.content.find((item) => item.type === 'text')?.text as string) || ''
+    : message.content;
 
 export function useMessageParser() {
   const [parsedMessages, setParsedMessages] = useState<{ [key: number]: string }>({});

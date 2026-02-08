@@ -1,5 +1,4 @@
-import { generateText, type GenerateTextResult, type ToolSet } from 'ai';
-import type { Message } from '@ai-sdk/ui-utils';
+import { generateText, type CoreTool, type GenerateTextResult, type Message } from 'ai';
 import ignore from 'ignore';
 import type { IProviderSetting } from '~/types/model';
 import { IGNORE_PATTERNS, type FileMap } from './constants';
@@ -22,7 +21,7 @@ export async function selectContext(props: {
   promptId?: string;
   contextOptimization?: boolean;
   summary: string;
-  onFinish?: (resp: GenerateTextResult<ToolSet, never>) => void;
+  onFinish?: (resp: GenerateTextResult<Record<string, CoreTool<any, any>>, never>) => void;
 }) {
   const { messages, env: serverEnv, apiKeys, files, providerSettings, summary, onFinish } = props;
   let currentModel = DEFAULT_MODEL;
@@ -108,7 +107,10 @@ export async function selectContext(props: {
 
   const summaryText = `Here is the summary of the chat till now: ${summary}`;
 
-  const extractTextContent = (message: Message) => message.content;
+  const extractTextContent = (message: Message) =>
+    Array.isArray(message.content)
+      ? (message.content.find((item) => item.type === 'text')?.text as string) || ''
+      : message.content;
 
   const lastUserMessage = processedMessages.filter((x) => x.role == 'user').pop();
 

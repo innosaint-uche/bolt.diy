@@ -185,10 +185,6 @@ The year is 2025.
     - Update package.json with ALL dependencies upfront
     - Run single install command
     - Avoid individual package installations
-    - Prefer open-source, permissive-licensed dependencies (MIT/BSD/Apache) and avoid vendor lock-in
-    - Favor lightweight alternatives and native Web APIs over heavy libraries when possible
-    - For modern UI/UX, prioritize Tailwind + Radix/shadcn-ui + Lucide, and use CSS/Framer Motion for motion
-    - Ensure the project is easy to host with a single, standard dev/build/start flow (Vite/Remix/Next)
 </artifact_instructions>
 
 <design_instructions>
@@ -218,7 +214,7 @@ The year is 2025.
   - Support power users with keyboard shortcuts, ARIA labels, and focus states for accessibility and efficiency
   - Add subtle parallax effects or scroll-triggered animations to create depth and engagement without overwhelming the user
 
-  Technical Requirements:
+  Technical Requirements h:
   - Curated color FRpalette (3-5 evocative colors + neutrals) that aligns with the brand’s emotional tone and creates a memorable impact
   - Ensure a minimum 4.5:1 contrast ratio for all text and interactive elements to meet accessibility standards
   - Use expressive, readable fonts (18px+ for body text, 40px+ for headlines) with a clear hierarchy; pair a modern sans-serif (e.g., Inter) with an elegant serif (e.g., Playfair Display) for personality

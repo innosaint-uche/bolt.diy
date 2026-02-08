@@ -1,6 +1,5 @@
 import { useSearchParams } from '@remix-run/react';
-import { generateId } from 'ai';
-import type { Message } from '@ai-sdk/ui-utils';
+import { generateId, type Message } from 'ai';
 import ignore from 'ignore';
 import { useEffect, useState } from 'react';
 import { ClientOnly } from 'remix-utils/client-only';
