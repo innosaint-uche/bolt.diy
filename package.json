@@ -12,8 +12,8 @@
   },
   "scripts": {
     "deploy": "npm run build && wrangler pages deploy",
-    "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" remix vite:build",
-    "dev": "node pre-start.cjs  && remix vite:dev",
+    "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192 --require=./scripts/node-globals.cjs\" remix vite:build",
+    "dev": "cross-env NODE_OPTIONS=\"--require=./scripts/node-globals.cjs\" node pre-start.cjs && cross-env NODE_OPTIONS=\"--require=./scripts/node-globals.cjs\" remix vite:dev",
     "test": "vitest --run",
     "test:watch": "vitest",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint app",
