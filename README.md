@@ -41,6 +41,8 @@ you to understand where the current areas of focus are.
 If you want to know what we are working on, what we are planning to work on, or if you want to contribute to the
 project, please check the [project management guide](./PROJECT.md) to get started easily.
 
+If you use Codex + Linear for planning, install the curated `linear` skill and configure the Linear MCP server (`https://mcp.linear.app/mcp`) with `rmcp_client = true` in your Codex config. Then run `codex mcp login linear` and restart Codex before issue triage or sprint planning workflows.
+
 ## Recent Major Additions
 
 ### ✅ Completed Features
